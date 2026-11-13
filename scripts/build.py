@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import tempfile
 from urllib.parse import urlparse
@@ -71,11 +72,10 @@ def encode_entries(entries):
     return (json.dumps({"version": 2, "rules": [fields] if fields else []}, ensure_ascii=False, indent=2) + "\n").encode()
 
 
-def fetch_source(source):
-    url = source["url"]
+def download_public(url, allowed_host="raw.githubusercontent.com"):
     parsed = urlparse(url)
-    if parsed.scheme != "https" or parsed.hostname != "raw.githubusercontent.com" or parsed.username or parsed.password or parsed.query or parsed.fragment:
-        raise ValueError("Only configured public raw.githubusercontent.com HTTPS sources are allowed")
+    if parsed.scheme != "https" or parsed.hostname != allowed_host or parsed.username or parsed.password or parsed.query or parsed.fragment:
+        raise ValueError("Only configured public GitHub HTTPS sources are allowed")
     result = subprocess.run([
         "curl", "--fail", "--location", "--silent", "--show-error",
         "--proto", "=https", "--proto-redir", "=https", "--tlsv1.2",
@@ -84,10 +84,58 @@ def fetch_source(source):
     ], capture_output=True, check=True)
     raw = result.stdout
     if len(raw) > MAX_SOURCE_BYTES:
-        raise ValueError(source["tag"] + ": source too large")
+        raise ValueError("Source too large")
+    return raw
+
+
+def fetch_source(source):
+    url = source["url"]
+    raw = download_public(url)
     entries, info = parse_source(raw, source["tag"])
     info.update({"url": url, "sha256": hashlib.sha256(raw).hexdigest()})
     return source["tag"], entries, info
+
+
+def fetch_mirrors(options):
+    if not options:
+        return {}, {}, None
+    repository, ref, directory = options["repository"], options["ref"], options["path"]
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository) or not re.fullmatch(r"[A-Za-z0-9_.-]+", ref) or not re.fullmatch(r"[A-Za-z0-9_-]+", directory):
+        raise ValueError("Invalid public mirror repository/ref/path")
+    names = options["files"]
+    if not names or len(names) != len(set(names)) or any(not re.fullmatch(r"[A-Za-z0-9_-]+\.(json|srs)", name) or name in ("all.json", "all.srs", "proxy.json", "proxy.srs", "build-info.json") for name in names):
+        raise ValueError("Invalid/duplicate/colliding mirror filename")
+    ref_document = json.loads(download_public("https://api.github.com/repos/" + repository + "/git/ref/heads/" + ref, "api.github.com"))
+    commit = ref_document["object"]["sha"]
+    if ref_document["object"].get("type") != "commit" or not re.fullmatch(r"[0-9a-f]{40}", commit):
+        raise ValueError("Unexpected mirror source ref")
+    prefix = "https://raw.githubusercontent.com/" + repository + "/" + commit + "/" + directory + "/"
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        payloads = dict(zip(names, pool.map(download_public, [prefix + name for name in names])))
+    info = {name: {"url": prefix + name, "sha256": hashlib.sha256(raw).hexdigest(), "bytes": len(raw)} for name, raw in payloads.items()}
+    origin = {"repository": repository, "ref": ref, "path": directory, "commit": commit}
+    return payloads, info, origin
+
+
+def validate_mirrors(compiler, payloads, stage):
+    validation = stage / "mirror-validation"
+    validation.mkdir()
+    for name, raw in payloads.items():
+        path = stage / name
+        path.write_bytes(raw)
+        if path.suffix == ".srs":
+            if len(raw) < 8 or raw[:3] != b"SRS":
+                raise ValueError("Invalid mirrored SRS: " + name)
+            decoded = validation / (path.stem + "-copied.json")
+            subprocess.run([str(compiler), "rule-set", "decompile", "--output", str(decoded), str(path)], check=True, capture_output=True)
+            document = json.loads(decoded.read_bytes())
+            if not isinstance(document.get("rules"), list) or not document["rules"]:
+                raise ValueError("Empty mirrored rule-set: " + name)
+        else:
+            document = json.loads(raw)
+            if not isinstance(document, dict) or not isinstance(document.get("rules"), list) or not document["rules"]:
+                raise ValueError("Invalid mirrored JSON: " + name)
+            compile_and_validate(compiler, path, validation / (path.stem + "-source.srs"), validation)
 
 
 def check_source_drop(current, previous, allow_large_drop=False):
@@ -121,13 +169,31 @@ def build(config, compiler, destination, allow_large_drop=False):
     specifications = config["sources"]
     if len({item["tag"] for item in specifications}) != len(specifications):
         raise ValueError("Duplicate input source tag")
+    mirrored, mirror_info, mirror_origin = fetch_mirrors(config.get("mirror"))
+
+    def fetch_input(specification):
+        # The Telegram copy and the Telegram used in all come from the same pinned commit.
+        name = specification["tag"] + ".json"
+        if mirror_origin:
+            original = "https://raw.githubusercontent.com/" + mirror_origin["repository"] + "/" + mirror_origin["ref"] + "/" + mirror_origin["path"] + "/" + name
+            if name in mirrored and specification["url"] == original:
+                entries, info = parse_source(mirrored[name], specification["tag"])
+                info.update({"url": mirror_info[name]["url"], "sha256": mirror_info[name]["sha256"]})
+                return specification["tag"], entries, info
+        return fetch_source(specification)
+
     with ThreadPoolExecutor(max_workers=6) as pool:
-        downloaded = list(pool.map(fetch_source, specifications))
+        downloaded = list(pool.map(fetch_input, specifications))
     sources = {tag: entries for tag, entries, _ in downloaded}
     source_info = {tag: info for tag, _, info in downloaded}
     manifest_path = destination / "build-info.json"
     previous = json.loads(manifest_path.read_text()) if manifest_path.is_file() else {}
     check_source_drop(source_info, previous, allow_large_drop)
+    if not allow_large_drop:
+        for name, info in mirror_info.items():
+            old_size = previous.get("mirrors", {}).get(name, {}).get("bytes", 0)
+            if old_size and info["bytes"] < old_size * 0.6:
+                raise ValueError(name + ": mirrored file shrank more than 40%; review before allowing a large drop")
     all_entries, proxy_entries, removed = merge_entries(sources, config["categories"], config["proxy"])
     if not count_entries(all_entries) or not count_entries(proxy_entries):
         raise ValueError("Unexpected empty output; preserving previous published rules")
@@ -137,6 +203,8 @@ def build(config, compiler, destination, allow_large_drop=False):
         "source_format_version": 2,
         "compiler": expected_version,
         "sources": source_info,
+        "mirrored_from": mirror_origin,
+        "mirrors": mirror_info,
         "outputs": {},
         "proxy_removed_by_field": {k: v for k, v in removed.items() if v},
         "proxy_removed_total": sum(removed.values()),
@@ -154,6 +222,9 @@ def build(config, compiler, destination, allow_large_drop=False):
                 "files": {path.name: {"sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "bytes": path.stat().st_size} for path in (source, target)},
             }
         names = ["all.json", "all.srs", "proxy.json", "proxy.srs"]
+        if mirrored:
+            validate_mirrors(compiler, mirrored, stage)
+            names.extend(mirrored)
         checksums = "".join(hashlib.sha256((stage / name).read_bytes()).hexdigest() + "  " + name + "\n" for name in names)
         (stage / "SHA256SUMS").write_text(checksums)
         (stage / "build-info.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")

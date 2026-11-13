@@ -1,6 +1,12 @@
 {
   "categories": ["media", "microsoft", "github", "ai", "telegram"],
   "proxy": "proxy",
+  "mirror": {
+    "repository": "qwer123wd/asd123",
+    "ref": "main",
+    "path": "singbox",
+    "files": ["ads.srs", "3WP.srs", "fakeip-filter.srs", "privateip.srs", "drive.srs", "telegram.srs", "privateip.json", "telegram.json"]
+  },
   "sources": [
     {"tag": "media", "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/media.json"},
     {"tag": "microsoft", "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/microsoft.json"},
