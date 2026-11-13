@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-13T17:33:14+00:00",
+  "updated_at": "2026-11-13T17:55:11+00:00",
   "deduplication": "exact string equality within the same rule field; no cross-field or semantic subtraction",
   "source_format_version": 2,
   "compiler": "1.15.0-alpha.13",
@@ -58,7 +58,7 @@
       "fields": {
         "domain_suffix": 21
       },
-      "url": "https://raw.githubusercontent.com/qwer123wd/asd123/main/singbox/telegram.json",
+      "url": "https://raw.githubusercontent.com/qwer123wd/asd123/a2af7c4b1edc622a08fbbb5ecdcd0a480834f65a/singbox/telegram.json",
       "sha256": "f8c08c16d50afcc85280220c0e2dda00c5f3498ced9a9cb5b5a1f2de9c5a175f"
     },
     "proxy": {
@@ -71,6 +71,54 @@
       },
       "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/proxy.json",
       "sha256": "a45b8b746b90ae7799734f21a22e2deee9f70a9261f4bd382e4969893d85dc85"
+    }
+  },
+  "mirrored_from": {
+    "repository": "qwer123wd/asd123",
+    "ref": "main",
+    "path": "singbox",
+    "commit": "a2af7c4b1edc622a08fbbb5ecdcd0a480834f65a"
+  },
+  "mirrors": {
+    "ads.srs": {
+      "url": "https://raw.githubusercontent.com/qwer123wd/asd123/a2af7c4b1edc622a08fbbb5ecdcd0a480834f65a/singbox/ads.srs",
+      "sha256": "248edba8ce47b99024ab6143876f1d504e6d19e968cf6af023b1394d8802aaab",
+      "bytes": 3033
+    },
+    "3WP.srs": {
+      "url": "https://raw.githubusercontent.com/qwer123wd/asd123/a2af7c4b1edc622a08fbbb5ecdcd0a480834f65a/singbox/3WP.srs",
+      "sha256": "eb084c00c707698042a32d91a376834fe5229766d7e9f3b6b0c6d4ee4b5637e9",
+      "bytes": 507
+    },
+    "fakeip-filter.srs": {
+      "url": "https://raw.githubusercontent.com/qwer123wd/asd123/a2af7c4b1edc622a08fbbb5ecdcd0a480834f65a/singbox/fakeip-filter.srs",
+      "sha256": "2ebe7c92c9e9235d086a663081e2b07014a54c5893035edabf5e15fa8fc1226c",
+      "bytes": 830
+    },
+    "privateip.srs": {
+      "url": "https://raw.githubusercontent.com/qwer123wd/asd123/a2af7c4b1edc622a08fbbb5ecdcd0a480834f65a/singbox/privateip.srs",
+      "sha256": "de8538d905b49cef8851ba6993f1ff9cecd4dc9673fb7e371fd858f5bc86c806",
+      "bytes": 138
+    },
+    "drive.srs": {
+      "url": "https://raw.githubusercontent.com/qwer123wd/asd123/a2af7c4b1edc622a08fbbb5ecdcd0a480834f65a/singbox/drive.srs",
+      "sha256": "aff79bba04eade00be8b87602f058fb6209f5fdf5e5f5fb2759352bb7eb2b684",
+      "bytes": 696
+    },
+    "telegram.srs": {
+      "url": "https://raw.githubusercontent.com/qwer123wd/asd123/a2af7c4b1edc622a08fbbb5ecdcd0a480834f65a/singbox/telegram.srs",
+      "sha256": "df8bc498b56c07adc07f1ee8b7dcb73a3de7d965427b4b5de34dd8f2ebc465cc",
+      "bytes": 247
+    },
+    "privateip.json": {
+      "url": "https://raw.githubusercontent.com/qwer123wd/asd123/a2af7c4b1edc622a08fbbb5ecdcd0a480834f65a/singbox/privateip.json",
+      "sha256": "6f5535152041cef5822e1897b8999e4c36063710a9e5881e4da6e911df25acfe",
+      "bytes": 471
+    },
+    "telegram.json": {
+      "url": "https://raw.githubusercontent.com/qwer123wd/asd123/a2af7c4b1edc622a08fbbb5ecdcd0a480834f65a/singbox/telegram.json",
+      "sha256": "f8c08c16d50afcc85280220c0e2dda00c5f3498ced9a9cb5b5a1f2de9c5a175f",
+      "bytes": 564
     }
   },
   "outputs": {
