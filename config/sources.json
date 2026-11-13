@@ -1,0 +1,12 @@
+{
+  "categories": ["media", "microsoft", "github", "ai", "telegram"],
+  "proxy": "proxy",
+  "sources": [
+    {"tag": "media", "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/media.json"},
+    {"tag": "microsoft", "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/microsoft.json"},
+    {"tag": "github", "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/github.json"},
+    {"tag": "ai", "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/ai.json"},
+    {"tag": "telegram", "url": "https://raw.githubusercontent.com/qwer123wd/asd123/main/singbox/telegram.json"},
+    {"tag": "proxy", "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/proxy.json"}
+  ]
+}

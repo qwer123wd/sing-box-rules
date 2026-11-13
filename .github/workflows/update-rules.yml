@@ -1,0 +1,75 @@
+name: Update rule sets
+
+on:
+  schedule:
+    # Every Monday 04:23 Asia/Shanghai (Sunday 20:23 UTC).
+    - cron: '23 20 * * 0'
+  workflow_dispatch:
+    inputs:
+      allow_large_drop:
+        description: 'Allow an upstream entry-count drop over 40% after manual review'
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - 'tests/**'
+      - 'config/**'
+      - '.github/workflows/update-rules.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-rule-sets
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: Check out default branch
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Run exact-deduplication and safety tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Install checksum-pinned official compiler
+        run: python3 scripts/install_compiler.py
+      - name: Fetch, build and validate both rule sets
+        env:
+          ALLOW_LARGE_DROP: ${{ inputs.allow_large_drop && '1' || '0' }}
+        run: |
+          if [ "$ALLOW_LARGE_DROP" = "1" ]; then
+            python3 scripts/build.py --allow-large-drop
+          else
+            python3 scripts/build.py
+          fi
+          sha256sum --check SHA256SUMS
+      - name: Publish one complete, validated snapshot
+        run: |
+          git config --local user.name 'github-actions[bot]'
+          git config --local user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add all.json all.srs proxy.json proxy.srs SHA256SUMS build-info.json
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m 'Update rule sets and source audit manifest'
+          git push origin HEAD:main
+      - name: Summarize published snapshot
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          info = json.loads(Path('build-info.json').read_text())
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as out:
+              out.write('## Rule sets published\n\n')
+              out.write('- Updated: ' + info['updated_at'] + '\n')
+              out.write('- all: ' + str(info['outputs']['all']['entries']) + ' entries\n')
+              out.write('- proxy: ' + str(info['outputs']['proxy']['entries']) + ' entries\n')
+              out.write('- Removed from proxy: ' + str(info['proxy_removed_total']) + ' exact duplicates\n')
+          PY

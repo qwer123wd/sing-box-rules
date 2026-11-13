@@ -1,0 +1,13 @@
+{
+  "version": "1.15.0-alpha.13",
+  "assets": {
+    "Darwin-arm64": {
+      "name": "sing-box-1.15.0-alpha.13-darwin-arm64.tar.gz",
+      "sha256": "fb8d4353e45c985d793b04ccaf2960860128de2c82aa5a00012ce012ab01fc4e"
+    },
+    "Linux-x86_64": {
+      "name": "sing-box-1.15.0-alpha.13-linux-amd64.tar.gz",
+      "sha256": "bfc39f643a5ecc1b702c5723ff662e61dde813f12b3af0d0cfce4f629ff74047"
+    }
+  }
+}
