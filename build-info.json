@@ -1,0 +1,118 @@
+{
+  "updated_at": "2026-11-13T17:33:14+00:00",
+  "deduplication": "exact string equality within the same rule field; no cross-field or semantic subtraction",
+  "source_format_version": 2,
+  "compiler": "1.15.0-alpha.13",
+  "sources": {
+    "media": {
+      "version": 5,
+      "raw_entries": 1307,
+      "unique_entries": 1307,
+      "fields": {
+        "domain": 27,
+        "domain_suffix": 1256,
+        "domain_keyword": 24
+      },
+      "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/media.json",
+      "sha256": "e956bcf5891a8f81b56edddee3dc7f814a9d93f87035e4cf4fc00e18e78fdda2"
+    },
+    "microsoft": {
+      "version": 2,
+      "raw_entries": 759,
+      "unique_entries": 757,
+      "fields": {
+        "domain": 117,
+        "domain_suffix": 637,
+        "domain_keyword": 3
+      },
+      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/microsoft.json",
+      "sha256": "f5021c1c4f8842ba717a0365a142ec2fab9fa2d4faaa1ee29664657fdcce966f"
+    },
+    "github": {
+      "version": 2,
+      "raw_entries": 66,
+      "unique_entries": 66,
+      "fields": {
+        "domain": 33,
+        "domain_suffix": 33
+      },
+      "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/github.json",
+      "sha256": "fa2228474b14254cf7869c48cf16ee4fdcf276c4348b228d2b8e5cb5cfe059f9"
+    },
+    "ai": {
+      "version": 5,
+      "raw_entries": 226,
+      "unique_entries": 226,
+      "fields": {
+        "domain": 34,
+        "domain_suffix": 189,
+        "domain_keyword": 3
+      },
+      "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/ai.json",
+      "sha256": "c7e4301ca3c03c5d4155b96624ab3c02e391e9641c5e677c94ef4ceba3d5f729"
+    },
+    "telegram": {
+      "version": 5,
+      "raw_entries": 21,
+      "unique_entries": 21,
+      "fields": {
+        "domain_suffix": 21
+      },
+      "url": "https://raw.githubusercontent.com/qwer123wd/asd123/main/singbox/telegram.json",
+      "sha256": "f8c08c16d50afcc85280220c0e2dda00c5f3498ced9a9cb5b5a1f2de9c5a175f"
+    },
+    "proxy": {
+      "version": 5,
+      "raw_entries": 26633,
+      "unique_entries": 26633,
+      "fields": {
+        "domain": 95,
+        "domain_suffix": 26538
+      },
+      "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/proxy.json",
+      "sha256": "a45b8b746b90ae7799734f21a22e2deee9f70a9261f4bd382e4969893d85dc85"
+    }
+  },
+  "outputs": {
+    "all": {
+      "entries": 27263,
+      "fields": {
+        "domain": 263,
+        "domain_suffix": 26970,
+        "domain_keyword": 30
+      },
+      "files": {
+        "all.json": {
+          "sha256": "1f8008e74ad0796e79b09b13de0309dafeabdc623b0b0ddf3e4bb59e477aa3d1",
+          "bytes": 699953
+        },
+        "all.srs": {
+          "sha256": "3b5cb80728f138100aff984e155065c1445b335b9ff3962ad766a3ef513341ed",
+          "bytes": 164488
+        }
+      }
+    },
+    "proxy": {
+      "entries": 24961,
+      "fields": {
+        "domain": 91,
+        "domain_suffix": 24870
+      },
+      "files": {
+        "proxy.json": {
+          "sha256": "b197805f8bb9b65363ddd27e49185abe34cf9698e01e8198ebb984d7a41690d4",
+          "bytes": 636914
+        },
+        "proxy.srs": {
+          "sha256": "d84814c6277e7efbafa1abac7dd741c66634acb02188cb030be6cde449a1e9de",
+          "bytes": 150411
+        }
+      }
+    }
+  },
+  "proxy_removed_by_field": {
+    "domain": 4,
+    "domain_suffix": 1668
+  },
+  "proxy_removed_total": 1672
+}
