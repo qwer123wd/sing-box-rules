@@ -117,50 +117,52 @@ class EntryTests(unittest.TestCase):
                 self.assertEqual((out / name).read_bytes(), raw)
             self.assertFalse((out / "build-info.json").exists())
 
-    def test_mirror_source_is_pinned_and_bytes_preserved(self):
-        commit = "a" * 40
-        options = {"repository": "example/rules", "ref": "main", "path": "singbox", "files": ["telegram.json", "telegram.srs"]}
-        bodies = {"telegram.json": b'{"version":5,"rules":[{"domain_suffix":["t.test"]}]}\n', "telegram.srs": b"SRS\x05unchanged-binary"}
+    def test_local_telegram_input_does_not_use_network(self):
+        raw = source(domain_suffix=["t.test"])
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "telegram.json").write_bytes(raw)
+            with mock.patch.object(builder, "ROOT", root), mock.patch.object(builder, "download_public", side_effect=AssertionError("Unexpected download")):
+                tag, value, info = builder.fetch_source({"tag": "telegram", "path": "telegram.json"})
+            self.assertEqual(tag, "telegram")
+            self.assertEqual(value["domain_suffix"], {"t.test"})
+            self.assertEqual(info["path"], "telegram.json")
+            self.assertNotIn("url", info)
+            self.assertEqual((root / "telegram.json").read_bytes(), raw)
 
-        def download(url, allowed_host="raw.githubusercontent.com"):
-            if allowed_host == "api.github.com":
-                return json.dumps({"object": {"type": "commit", "sha": commit}}).encode()
-            self.assertIn("/" + commit + "/singbox/", url)
-            return bodies[url.rsplit("/", 1)[1]]
-
-        with mock.patch.object(builder, "download_public", side_effect=download):
-            raw, info, origin = builder.fetch_mirrors(options)
-        self.assertEqual(raw, bodies)
-        self.assertEqual(origin["commit"], commit)
-        self.assertEqual(info["telegram.srs"]["bytes"], len(bodies["telegram.srs"]))
-
-    def test_mirror_rejects_path_traversal_and_generated_output_collision(self):
+    def test_fixed_files_reject_path_traversal_and_generated_output_collision(self):
         for names in (["../ads.srs"], ["all.srs"], ["proxy.json"], ["build-info.json"], ["README.md"], ["ads.srs", "ads.srs"]):
             with self.subTest(names=names), self.assertRaises(ValueError):
-                builder.fetch_mirrors({"repository": "example/rules", "ref": "main", "path": "singbox", "files": names})
+                builder.fixed_file_info(names)
 
-    def test_invalid_mirror_binary_is_not_accepted(self):
-        with tempfile.TemporaryDirectory() as folder:
+    def test_ambiguous_or_missing_source_location_is_rejected(self):
+        for specification in ({"tag": "x"}, {"tag": "x", "path": "telegram.json", "url": "https://example.invalid/x.json"}):
             with self.assertRaises(ValueError):
-                builder.validate_mirrors(Path(folder) / "compiler", {"ads.srs": b"<html>not a rule set</html>"}, Path(folder))
+                builder.fetch_source(specification)
 
-    def test_mirror_failure_preserves_all_existing_outputs(self):
-        config = {"categories": ["a"], "proxy": "p", "sources": [{"tag": "a"}, {"tag": "p"}]}
-        data = [("a", entries(domain=["a.test"]), {"unique_entries": 1}), ("p", entries(domain=["p.test"]), {"unique_entries": 1})]
+    def test_build_never_rewrites_fixed_files(self):
+        config = {"categories": ["a"], "proxy": "p", "fixed_files": ["telegram.json", "ads.srs"], "sources": [{"tag": "a", "path": "telegram.json"}, {"tag": "p", "url": "https://raw.githubusercontent.com/example/rules/main/p.json"}]}
         version = json.loads((builder.ROOT / "config/compiler.json").read_text())["version"]
         with tempfile.TemporaryDirectory() as folder:
-            out = Path(folder)
-            names = ("all.json", "all.srs", "proxy.json", "proxy.srs", "ads.srs", "SHA256SUMS")
-            for name in names:
-                (out / name).write_bytes(("old-" + name).encode())
+            root = Path(folder)
+            (root / "config").mkdir()
+            (root / "config/compiler.json").write_text(json.dumps({"version": version}))
+            fixed = {"telegram.json": source(domain=["a.test"]), "ads.srs": b"SRS\x02fixed-original"}
+            for name, raw in fixed.items():
+                (root / name).write_bytes(raw)
+            modified_times = {name: (root / name).stat().st_mtime_ns for name in fixed}
+
             def fake_compile(compiler, source, target, scratch):
                 target.write_bytes(b"SRS\x02test-output")
 
-            with mock.patch.object(builder.subprocess, "check_output", return_value="sing-box version " + version + "\n"), mock.patch.object(builder, "fetch_source", side_effect=lambda item: next(row for row in data if row[0] == item["tag"])), mock.patch.object(builder, "fetch_mirrors", return_value=({"ads.srs": b"bad"}, {}, None)), mock.patch.object(builder, "compile_and_validate", side_effect=fake_compile), mock.patch.object(builder, "validate_mirrors", side_effect=ValueError("invalid mirror")):
-                with self.assertRaises(ValueError):
-                    builder.build(config, out / "compiler", out)
-            for name in names:
-                self.assertEqual((out / name).read_bytes(), ("old-" + name).encode())
+            with mock.patch.object(builder, "ROOT", root), mock.patch.object(builder.subprocess, "check_output", return_value="sing-box version " + version + "\n"), mock.patch.object(builder, "download_public", return_value=source(domain=["p.test"])), mock.patch.object(builder, "compile_and_validate", side_effect=fake_compile):
+                manifest = builder.build(config, root / "compiler", root / "output")
+            for name, raw in fixed.items():
+                self.assertEqual((root / name).read_bytes(), raw)
+                self.assertEqual((root / name).stat().st_mtime_ns, modified_times[name])
+                self.assertFalse((root / "output" / name).exists())
+            self.assertEqual(set(manifest["fixed_files"]), set(fixed))
+            self.assertNotIn("ads.srs", (root / "output/SHA256SUMS").read_text())
 
 
 if __name__ == "__main__":

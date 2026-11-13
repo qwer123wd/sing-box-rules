@@ -39,7 +39,9 @@ jobs:
         run: python3 -m unittest discover -s tests -v
       - name: Install checksum-pinned official compiler
         run: python3 scripts/install_compiler.py
-      - name: Fetch, mirror, build and validate all rule sets
+      - name: Record fixed-file checksums
+        run: sha256sum ads.srs 3WP.srs fakeip-filter.srs privateip.srs drive.srs telegram.srs privateip.json telegram.json > "$RUNNER_TEMP/fixed-rules.sha256"
+      - name: Build and validate all and proxy only
         env:
           ALLOW_LARGE_DROP: ${{ inputs.allow_large_drop && '1' || '0' }}
         run: |
@@ -49,11 +51,12 @@ jobs:
             python3 scripts/build.py
           fi
           sha256sum --check SHA256SUMS
+          sha256sum --check "$RUNNER_TEMP/fixed-rules.sha256"
       - name: Publish one complete, validated snapshot
         run: |
           git config --local user.name 'github-actions[bot]'
           git config --local user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add all.json all.srs proxy.json proxy.srs ads.srs 3WP.srs fakeip-filter.srs privateip.srs drive.srs telegram.srs privateip.json telegram.json SHA256SUMS build-info.json
+          git add all.json all.srs proxy.json proxy.srs SHA256SUMS build-info.json
           if git diff --cached --quiet; then
             exit 0
           fi
@@ -72,5 +75,5 @@ jobs:
               out.write('- all: ' + str(info['outputs']['all']['entries']) + ' entries\n')
               out.write('- proxy: ' + str(info['outputs']['proxy']['entries']) + ' entries\n')
               out.write('- Removed from proxy: ' + str(info['proxy_removed_total']) + ' exact duplicates\n')
-              out.write('- Mirrored files: ' + str(len(info['mirrors'])) + '\n')
+              out.write('- Fixed files preserved: ' + str(len(info['fixed_files'])) + '\n')
           PY
