@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-14T10:23:44+00:00",
+  "updated_at": "2026-11-14T10:29:34+00:00",
   "deduplication": "exact string equality within the same rule field; no cross-field or semantic subtraction",
   "source_format_version": 2,
   "compiler": "1.15.0-alpha.13",
