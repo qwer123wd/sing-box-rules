@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-13T18:06:53+00:00",
+  "updated_at": "2026-11-14T10:23:44+00:00",
   "deduplication": "exact string equality within the same rule field; no cross-field or semantic subtraction",
   "source_format_version": 2,
   "compiler": "1.15.0-alpha.13",
@@ -26,7 +26,7 @@
         "domain_keyword": 3
       },
       "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/microsoft.json",
-      "sha256": "f5021c1c4f8842ba717a0365a142ec2fab9fa2d4faaa1ee29664657fdcce966f"
+      "sha256": "53abc0a363a3c9094059b6b8ad637072905bf465e94b0c56d3002bd87e232a32"
     },
     "github": {
       "version": 2,
@@ -58,88 +58,310 @@
       "fields": {
         "domain_suffix": 21
       },
-      "path": "telegram.json",
+      "path": "data/telegram.json",
       "sha256": "f8c08c16d50afcc85280220c0e2dda00c5f3498ced9a9cb5b5a1f2de9c5a175f"
     },
     "proxy": {
       "version": 5,
-      "raw_entries": 26633,
-      "unique_entries": 26633,
+      "raw_entries": 26634,
+      "unique_entries": 26634,
       "fields": {
         "domain": 95,
-        "domain_suffix": 26538
+        "domain_suffix": 26539
       },
       "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/proxy.json",
-      "sha256": "a45b8b746b90ae7799734f21a22e2deee9f70a9261f4bd382e4969893d85dc85"
+      "sha256": "599f8a5916fe601806bf75fa944da0a5fa00f9236844baaa76bf75704b69391e"
     }
   },
   "fixed_files": {
-    "ads.srs": {
+    "data/ads.srs": {
       "sha256": "248edba8ce47b99024ab6143876f1d504e6d19e968cf6af023b1394d8802aaab",
       "bytes": 3033
     },
-    "3WP.srs": {
+    "data/3WP.srs": {
       "sha256": "eb084c00c707698042a32d91a376834fe5229766d7e9f3b6b0c6d4ee4b5637e9",
       "bytes": 507
     },
-    "fakeip-filter.srs": {
+    "data/fakeip-filter.srs": {
       "sha256": "2ebe7c92c9e9235d086a663081e2b07014a54c5893035edabf5e15fa8fc1226c",
       "bytes": 830
     },
-    "privateip.srs": {
+    "data/privateip.srs": {
       "sha256": "de8538d905b49cef8851ba6993f1ff9cecd4dc9673fb7e371fd858f5bc86c806",
       "bytes": 138
     },
-    "drive.srs": {
+    "data/drive.srs": {
       "sha256": "aff79bba04eade00be8b87602f058fb6209f5fdf5e5f5fb2759352bb7eb2b684",
       "bytes": 696
     },
-    "telegram.srs": {
+    "data/telegram.srs": {
       "sha256": "df8bc498b56c07adc07f1ee8b7dcb73a3de7d965427b4b5de34dd8f2ebc465cc",
       "bytes": 247
     },
-    "privateip.json": {
+    "data/privateip.json": {
       "sha256": "6f5535152041cef5822e1897b8999e4c36063710a9e5881e4da6e911df25acfe",
       "bytes": 471
     },
-    "telegram.json": {
+    "data/telegram.json": {
       "sha256": "f8c08c16d50afcc85280220c0e2dda00c5f3498ced9a9cb5b5a1f2de9c5a175f",
       "bytes": 564
+    },
+    "data/v3.16.1-iOS16.4-Compat.zip": {
+      "sha256": "c1557523e3780770444423dec6af41028bf4dc411c827fe6a9ed7057aa781f90",
+      "bytes": 1778799
+    },
+    "data/v3.29.1-singbox.13-iOS16.4.zip": {
+      "sha256": "70524f31f9af58c331fe74f45ae41d68adcb4139f740eb8855aa556e3cb5bc18",
+      "bytes": 3071015
     }
   },
   "outputs": {
     "all": {
-      "entries": 27263,
+      "entries": 27264,
       "fields": {
         "domain": 263,
-        "domain_suffix": 26970,
+        "domain_suffix": 26971,
         "domain_keyword": 30
       },
       "files": {
-        "all.json": {
-          "sha256": "1f8008e74ad0796e79b09b13de0309dafeabdc623b0b0ddf3e4bb59e477aa3d1",
-          "bytes": 699953
+        "data/all.json": {
+          "sha256": "e4f8deb3171b3a36b0808222cbe32d33e1f226e130da65197eecb881405e8054",
+          "bytes": 699977
         },
-        "all.srs": {
-          "sha256": "3b5cb80728f138100aff984e155065c1445b335b9ff3962ad766a3ef513341ed",
-          "bytes": 164488
+        "data/all.srs": {
+          "sha256": "63b5a7d15d7cd9bdbaf8e2a495d30be1b83c10418546c036c00e45e881c364ea",
+          "bytes": 164475
         }
       }
     },
     "proxy": {
-      "entries": 24961,
+      "entries": 24962,
       "fields": {
         "domain": 91,
-        "domain_suffix": 24870
+        "domain_suffix": 24871
       },
       "files": {
-        "proxy.json": {
-          "sha256": "b197805f8bb9b65363ddd27e49185abe34cf9698e01e8198ebb984d7a41690d4",
-          "bytes": 636914
+        "data/proxy.json": {
+          "sha256": "76b87a421b244913d9ae1830225e473fd1107ca746a46174332c5a45b6bc6cf3",
+          "bytes": 636938
         },
-        "proxy.srs": {
-          "sha256": "d84814c6277e7efbafa1abac7dd741c66634acb02188cb030be6cde449a1e9de",
-          "bytes": 150411
+        "data/proxy.srs": {
+          "sha256": "7f46b0d173e7d097ced3137d8c92ac795a7aa58d9130b575a9833f95c2c65807",
+          "bytes": 150427
+        }
+      }
+    }
+  },
+  "mirrors": {
+    "cnip": {
+      "version": 5,
+      "raw_entries": 9470,
+      "unique_entries": 9470,
+      "fields": {
+        "ip_cidr": 9470
+      },
+      "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/cnip.json",
+      "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/cnip.srs",
+      "files": {
+        "data/cnip.json": {
+          "sha256": "68fec3dd7788c8fe8399b4f52048865d7759536236bfe0fccb5abfca4b64f493",
+          "bytes": 254334
+        },
+        "data/cnip.srs": {
+          "sha256": "b224136459eea968568a089cc390466ab327c452af9af063a6769067783f6467",
+          "bytes": 38589
+        }
+      }
+    },
+    "cn": {
+      "version": 5,
+      "raw_entries": 109724,
+      "unique_entries": 109724,
+      "fields": {
+        "domain": 6,
+        "domain_suffix": 109718
+      },
+      "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/cn.json",
+      "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/cn.srs",
+      "files": {
+        "data/cn.json": {
+          "sha256": "2dbff50f6861abdd010bd91b5695eb254d5f808dda0a66cf6e024660a1d9118e",
+          "bytes": 2591272
+        },
+        "data/cn.srs": {
+          "sha256": "767d9c482a6d9d4511a5316adcb442609ecd96975ebd6514ae838dfdc93be853",
+          "bytes": 435421
+        }
+      }
+    },
+    "ai": {
+      "version": 5,
+      "raw_entries": 226,
+      "unique_entries": 226,
+      "fields": {
+        "domain": 34,
+        "domain_suffix": 189,
+        "domain_keyword": 3
+      },
+      "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/ai.json",
+      "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/ai.srs",
+      "files": {
+        "data/ai.json": {
+          "sha256": "c7e4301ca3c03c5d4155b96624ab3c02e391e9641c5e677c94ef4ceba3d5f729",
+          "bytes": 6576
+        },
+        "data/ai.srs": {
+          "sha256": "9c4940fed6e11894173f17ee33954e004bf7816653a97765cd6105a8954952ba",
+          "bytes": 2202
+        }
+      }
+    },
+    "media": {
+      "version": 5,
+      "raw_entries": 1307,
+      "unique_entries": 1307,
+      "fields": {
+        "domain": 27,
+        "domain_suffix": 1256,
+        "domain_keyword": 24
+      },
+      "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/media.json",
+      "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/media.srs",
+      "files": {
+        "data/media.json": {
+          "sha256": "e956bcf5891a8f81b56edddee3dc7f814a9d93f87035e4cf4fc00e18e78fdda2",
+          "bytes": 33867
+        },
+        "data/media.srs": {
+          "sha256": "5424e24e6954c5ee029d95ebc7fe9677d47fef55c3464f111638dadf6a60b82c",
+          "bytes": 10437
+        }
+      }
+    },
+    "telegramip": {
+      "version": 5,
+      "raw_entries": 12,
+      "unique_entries": 12,
+      "fields": {
+        "ip_cidr": 12
+      },
+      "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/telegramip.json",
+      "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/telegramip.srs",
+      "files": {
+        "data/telegramip.json": {
+          "sha256": "90f95d06041bebd1d39bf589d568b623f1981fa2471d8539220967f50c7892da",
+          "bytes": 400
+        },
+        "data/telegramip.srs": {
+          "sha256": "c5ae208004b0752baee307348ef820b9fe9e8aa3a14556f54af68791b6d4030b",
+          "bytes": 127
+        }
+      }
+    },
+    "spotify": {
+      "version": 5,
+      "raw_entries": 30,
+      "unique_entries": 30,
+      "fields": {
+        "domain": 5,
+        "domain_suffix": 24,
+        "domain_keyword": 1
+      },
+      "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/spotify.json",
+      "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/spotify.srs",
+      "files": {
+        "data/spotify.json": {
+          "sha256": "8f8391bc023882009f38ce9a7a1e136329fd32749f14d0f105441bcaaf123518",
+          "bytes": 1071
+        },
+        "data/spotify.srs": {
+          "sha256": "6445a7c978bce6e76a7fd16c2b374245648e9f83c9f4ee2a30ca82e06e229d8a",
+          "bytes": 401
+        }
+      }
+    },
+    "private": {
+      "version": 5,
+      "raw_entries": 141,
+      "unique_entries": 141,
+      "fields": {
+        "domain": 18,
+        "domain_suffix": 123
+      },
+      "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/private.json",
+      "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/private.srs",
+      "files": {
+        "data/private.json": {
+          "sha256": "cfafcbd8e3ccf1e94b42d3369c842c396099ec0e127733325d196df1d29f488b",
+          "bytes": 4319
+        },
+        "data/private.srs": {
+          "sha256": "8eea7d6faaa316ee3f5c8fb8e2f3f801775d0ea5a6d3ea947cfd70394219d5c9",
+          "bytes": 818
+        }
+      }
+    },
+    "apple": {
+      "version": 2,
+      "raw_entries": 1794,
+      "unique_entries": 1792,
+      "fields": {
+        "domain": 252,
+        "domain_suffix": 1540
+      },
+      "json_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/apple.json",
+      "srs_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/apple.srs",
+      "files": {
+        "data/apple.json": {
+          "sha256": "4baca7affdbd33ada5b6eb4040119369f2424c79cd35304333377d67b3fa7dee",
+          "bytes": 53691
+        },
+        "data/apple.srs": {
+          "sha256": "467e60e58659492bd48afe849fcbd685910e28e16765d73f17aeb0752660035f",
+          "bytes": 15675
+        }
+      }
+    },
+    "microsoft": {
+      "version": 2,
+      "raw_entries": 759,
+      "unique_entries": 757,
+      "fields": {
+        "domain": 117,
+        "domain_suffix": 637,
+        "domain_keyword": 3
+      },
+      "json_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/microsoft.json",
+      "srs_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/microsoft.srs",
+      "files": {
+        "data/microsoft.json": {
+          "sha256": "53abc0a363a3c9094059b6b8ad637072905bf465e94b0c56d3002bd87e232a32",
+          "bytes": 22960
+        },
+        "data/microsoft.srs": {
+          "sha256": "9c4f3ef5cd7a5193788c2a6b0750605af32f41bd2ce6a240107413a50e776961",
+          "bytes": 7035
+        }
+      }
+    },
+    "github": {
+      "version": 2,
+      "raw_entries": 66,
+      "unique_entries": 66,
+      "fields": {
+        "domain": 33,
+        "domain_suffix": 33
+      },
+      "json_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/github.json",
+      "srs_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/github.srs",
+      "files": {
+        "data/github.json": {
+          "sha256": "fa2228474b14254cf7869c48cf16ee4fdcf276c4348b228d2b8e5cb5cfe059f9",
+          "bytes": 2761
+        },
+        "data/github.srs": {
+          "sha256": "d63d6c10f29bc6f5003079397d334a11ee5913c58180c461faa243021a741e6b",
+          "bytes": 812
         }
       }
     }

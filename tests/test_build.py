@@ -107,10 +107,11 @@ class EntryTests(unittest.TestCase):
         version = json.loads((builder.ROOT / "config/compiler.json").read_text())["version"]
         with tempfile.TemporaryDirectory() as folder:
             out = Path(folder)
-            baseline = {name: ("old-" + name).encode() for name in ("all.json", "all.srs", "proxy.json", "proxy.srs", "SHA256SUMS")}
+            baseline = {name: ("old-" + name).encode() for name in ("data/all.json", "data/all.srs", "data/proxy.json", "data/proxy.srs", "SHA256SUMS")}
             for name, raw in baseline.items():
+                (out / name).parent.mkdir(parents=True, exist_ok=True)
                 (out / name).write_bytes(raw)
-            with mock.patch.object(builder.subprocess, "check_output", return_value="sing-box version " + version + "\n"), mock.patch.object(builder, "fetch_source", side_effect=lambda item: next(row for row in data if row[0] == item["tag"])), mock.patch.object(builder, "compile_and_validate", side_effect=RuntimeError("compiler failure")):
+            with mock.patch.object(builder.subprocess, "check_output", return_value="sing-box version " + version + "\n"), mock.patch.object(builder, "fetch_source", side_effect=lambda item, cache=None: next(row for row in data if row[0] == item["tag"])), mock.patch.object(builder, "compile_and_validate", side_effect=RuntimeError("compiler failure")):
                 with self.assertRaises(RuntimeError):
                     builder.build(config, out / "compiler", out)
             for name, raw in baseline.items():
@@ -121,17 +122,18 @@ class EntryTests(unittest.TestCase):
         raw = source(domain_suffix=["t.test"])
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            (root / "telegram.json").write_bytes(raw)
+            (root / "data").mkdir()
+            (root / "data/telegram.json").write_bytes(raw)
             with mock.patch.object(builder, "ROOT", root), mock.patch.object(builder, "download_public", side_effect=AssertionError("Unexpected download")):
-                tag, value, info = builder.fetch_source({"tag": "telegram", "path": "telegram.json"})
+                tag, value, info = builder.fetch_source({"tag": "telegram", "path": "data/telegram.json"})
             self.assertEqual(tag, "telegram")
             self.assertEqual(value["domain_suffix"], {"t.test"})
-            self.assertEqual(info["path"], "telegram.json")
+            self.assertEqual(info["path"], "data/telegram.json")
             self.assertNotIn("url", info)
-            self.assertEqual((root / "telegram.json").read_bytes(), raw)
+            self.assertEqual((root / "data/telegram.json").read_bytes(), raw)
 
     def test_fixed_files_reject_path_traversal_and_generated_output_collision(self):
-        for names in (["../ads.srs"], ["all.srs"], ["proxy.json"], ["build-info.json"], ["README.md"], ["ads.srs", "ads.srs"]):
+        for names in (["../ads.srs"], ["data/../ads.srs"], ["data/all.srs"], ["data/proxy.json"], ["data/build-info.json"], ["README.md"], ["data/ads.srs", "data/ads.srs"]):
             with self.subTest(names=names), self.assertRaises(ValueError):
                 builder.fixed_file_info(names)
 
@@ -141,13 +143,14 @@ class EntryTests(unittest.TestCase):
                 builder.fetch_source(specification)
 
     def test_build_never_rewrites_fixed_files(self):
-        config = {"categories": ["a"], "proxy": "p", "fixed_files": ["telegram.json", "ads.srs"], "sources": [{"tag": "a", "path": "telegram.json"}, {"tag": "p", "url": "https://raw.githubusercontent.com/example/rules/main/p.json"}]}
+        config = {"categories": ["a"], "proxy": "p", "fixed_files": ["data/telegram.json", "data/ads.srs", "data/ui.zip"], "sources": [{"tag": "a", "path": "data/telegram.json"}, {"tag": "p", "url": "https://raw.githubusercontent.com/example/rules/main/p.json"}]}
         version = json.loads((builder.ROOT / "config/compiler.json").read_text())["version"]
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             (root / "config").mkdir()
+            (root / "data").mkdir()
             (root / "config/compiler.json").write_text(json.dumps({"version": version}))
-            fixed = {"telegram.json": source(domain=["a.test"]), "ads.srs": b"SRS\x02fixed-original"}
+            fixed = {"data/telegram.json": source(domain=["a.test"]), "data/ads.srs": b"SRS\x02fixed-original", "data/ui.zip": b"PKfixed-ui"}
             for name, raw in fixed.items():
                 (root / name).write_bytes(raw)
             modified_times = {name: (root / name).stat().st_mtime_ns for name in fixed}
@@ -163,6 +166,117 @@ class EntryTests(unittest.TestCase):
                 self.assertFalse((root / "output" / name).exists())
             self.assertEqual(set(manifest["fixed_files"]), set(fixed))
             self.assertNotIn("ads.srs", (root / "output/SHA256SUMS").read_text())
+
+    def test_ip_mirrors_do_not_expand_merge_input_syntax(self):
+        raw = source(ip_cidr=["192.0.2.0/24", "2001:db8::/32"])
+        value, info = builder.parse_source(raw, "ip", allow_ip=True)
+        self.assertEqual(info["unique_entries"], 2)
+        self.assertEqual(len(value["ip_cidr"]), 2)
+        with self.assertRaises(ValueError):
+            builder.parse_source(raw, "ip")
+        with self.assertRaises(ValueError):
+            builder.parse_source(source(ip_cidr=["invalid"]), "ip", allow_ip=True)
+
+    def test_mirror_paths_and_fixed_file_collisions_are_rejected(self):
+        for tags in (["../escape"], ["all"], ["proxy"], ["a", "a"], ["telegram"]):
+            config = {"sources": [], "fixed_files": ["data/telegram.json"], "mirrors": [{"tag": tag, "json_url": "j", "srs_url": "s"} for tag in tags]}
+            with self.subTest(tags=tags), self.assertRaises(ValueError):
+                builder.mirror_output_names(config)
+
+    def test_shared_mirror_and_merge_json_url_must_agree(self):
+        config = {"sources": [{"tag": "a", "url": "one"}], "mirrors": [{"tag": "a", "json_url": "two", "srs_url": "s"}]}
+        with self.assertRaises(ValueError):
+            builder.mirror_output_names(config)
+
+    def test_mirror_pair_rejects_semantic_difference(self):
+        with mock.patch.object(builder, "compile_and_validate", return_value={"rules": [{"domain": ["a.test"]}]}), mock.patch.object(builder, "decode_and_validate", return_value={"rules": [{"domain": ["b.test"]}]}):
+            with self.assertRaises(ValueError):
+                builder.validate_mirror_pair(Path("compiler"), Path("a.json"), Path("a.srs"), Path("scratch"))
+
+    def test_mirror_pair_accepts_reordered_fields_without_rewriting(self):
+        with mock.patch.object(builder, "compile_and_validate", return_value={"rules": [{"domain": ["a.test", "b.test"]}]}), mock.patch.object(builder, "decode_and_validate", return_value={"rules": [{"domain": ["b.test", "a.test"]}]}):
+            builder.validate_mirror_pair(Path("compiler"), Path("a.json"), Path("a.srs"), Path("scratch"))
+
+    def mirror_fixture(self, root):
+        (root / "config").mkdir()
+        version = json.loads((builder.ROOT / "config/compiler.json").read_text())["version"]
+        (root / "config/compiler.json").write_text(json.dumps({"version": version}))
+        base = "https://raw.githubusercontent.com/example/rules/main/"
+        config = {"categories": ["a"], "proxy": "p", "sources": [{"tag": "a", "url": base + "a.json"}, {"tag": "p", "url": base + "p.json"}], "mirrors": [{"tag": tag, "json_url": base + tag + ".json", "srs_url": base + tag + ".srs"} for tag in ("a", "extra")]}
+        raw = {base + "a.json": source(domain=["a.test"]), base + "p.json": source(domain=["p.test"]), base + "extra.json": source(ip_cidr=["192.0.2.0/24"]), base + "a.srs": b"SRS\x05upstream-a", base + "extra.srs": b"SRS\x05upstream-extra"}
+        return config, raw, version
+
+    def test_independent_mirrors_are_verbatim_and_download_shared_json_once(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            config, payloads, version = self.mirror_fixture(root)
+            def compile_fake(compiler, source, binary, scratch):
+                binary.write_bytes(b"SRS\x02generated")
+            with mock.patch.object(builder, "ROOT", root), mock.patch.object(builder.subprocess, "check_output", return_value="sing-box version " + version), mock.patch.object(builder, "download_public", side_effect=payloads.__getitem__) as download, mock.patch.object(builder, "compile_and_validate", side_effect=compile_fake), mock.patch.object(builder, "validate_mirror_pair"):
+                manifest = builder.build(config, root / "compiler", root)
+            self.assertEqual(download.call_count, len(payloads))
+            for item in config["mirrors"]:
+                for suffix, key in ((".json", "json_url"), (".srs", "srs_url")):
+                    self.assertEqual((root / "data" / (item["tag"] + suffix)).read_bytes(), payloads[item[key]])
+            self.assertEqual(manifest["outputs"]["all"]["entries"], 2)
+            self.assertNotIn("ip_cidr", json.loads((root / "data/all.json").read_text())["rules"][0])
+            self.assertEqual(set(manifest["sources"]), {"a", "p"})
+            self.assertEqual(set(manifest["mirrors"]), {"a", "extra"})
+            self.assertFalse((root / "all.json").exists())
+
+    def test_mirror_failure_preserves_entire_previous_snapshot(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            config, payloads, version = self.mirror_fixture(root)
+            names = ["data/all.json", "data/all.srs", "data/proxy.json", "data/proxy.srs"] + builder.mirror_output_names(config) + ["SHA256SUMS"]
+            before = {name: ("previous-" + name).encode() for name in names}
+            before["build-info.json"] = b"{}"
+            for name, raw in before.items():
+                (root / name).parent.mkdir(parents=True, exist_ok=True)
+                (root / name).write_bytes(raw)
+            def compile_fake(compiler, source, binary, scratch):
+                binary.write_bytes(b"SRS\x02generated")
+            with mock.patch.object(builder, "ROOT", root), mock.patch.object(builder.subprocess, "check_output", return_value="sing-box version " + version), mock.patch.object(builder, "download_public", side_effect=payloads.__getitem__), mock.patch.object(builder, "compile_and_validate", side_effect=compile_fake), mock.patch.object(builder, "validate_mirror_pair", side_effect=ValueError("mismatched upstream pair")):
+                with self.assertRaises(ValueError):
+                    builder.build(config, root / "compiler", root)
+            for name, raw in before.items():
+                self.assertEqual((root / name).read_bytes(), raw)
+            self.assertFalse(list(root.glob(".build-*")))
+
+    def test_workflow_publishes_exact_dynamic_whitelist(self):
+        import shlex
+        config = json.loads((builder.ROOT / "config/sources.json").read_text())
+        workflow = (builder.ROOT / ".github/workflows/update-rules.yml").read_text()
+        command = workflow.split("          git add ", 1)[1].split("          if git diff", 1)[0].replace("\\\n", " ")
+        actual = set(shlex.split(command))
+        expected = {"data/all.json", "data/all.srs", "data/proxy.json", "data/proxy.srs", "SHA256SUMS", "build-info.json"} | set(builder.mirror_output_names(config))
+        self.assertEqual(actual, expected)
+        self.assertFalse(actual & set(config["fixed_files"]))
+
+    def test_download_failure_preserves_previous_manifest_and_rules(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            config, _, version = self.mirror_fixture(root)
+            (root / "data").mkdir()
+            (root / "data/all.srs").write_bytes(b"previous")
+            (root / "build-info.json").write_bytes(b"{}")
+            with mock.patch.object(builder, "ROOT", root), mock.patch.object(builder.subprocess, "check_output", return_value="sing-box version " + version), mock.patch.object(builder, "download_public", side_effect=RuntimeError("download failed")):
+                with self.assertRaises(RuntimeError):
+                    builder.build(config, root / "compiler", root)
+            self.assertEqual((root / "data/all.srs").read_bytes(), b"previous")
+            self.assertEqual((root / "build-info.json").read_bytes(), b"{}")
+
+    def test_large_independent_mirror_drop_stops_before_publication(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            config, payloads, version = self.mirror_fixture(root)
+            previous = json.dumps({"mirrors": {"extra": {"unique_entries": 100}}}).encode()
+            (root / "build-info.json").write_bytes(previous)
+            with mock.patch.object(builder, "ROOT", root), mock.patch.object(builder.subprocess, "check_output", return_value="sing-box version " + version), mock.patch.object(builder, "download_public", side_effect=payloads.__getitem__), mock.patch.object(builder, "compile_and_validate") as compile_mock:
+                with self.assertRaisesRegex(ValueError, "40%"):
+                    builder.build(config, root / "compiler", root)
+            compile_mock.assert_not_called()
+            self.assertEqual((root / "build-info.json").read_bytes(), previous)
 
 
 if __name__ == "__main__":

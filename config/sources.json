@@ -1,13 +1,25 @@
 {
   "categories": ["media", "microsoft", "github", "ai", "telegram"],
   "proxy": "proxy",
-  "fixed_files": ["ads.srs", "3WP.srs", "fakeip-filter.srs", "privateip.srs", "drive.srs", "telegram.srs", "privateip.json", "telegram.json"],
+  "fixed_files": ["data/ads.srs", "data/3WP.srs", "data/fakeip-filter.srs", "data/privateip.srs", "data/drive.srs", "data/telegram.srs", "data/privateip.json", "data/telegram.json", "data/v3.16.1-iOS16.4-Compat.zip", "data/v3.29.1-singbox.13-iOS16.4.zip"],
   "sources": [
     {"tag": "media", "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/media.json"},
     {"tag": "microsoft", "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/microsoft.json"},
     {"tag": "github", "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/github.json"},
     {"tag": "ai", "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/ai.json"},
-    {"tag": "telegram", "path": "telegram.json"},
+    {"tag": "telegram", "path": "data/telegram.json"},
     {"tag": "proxy", "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/proxy.json"}
+  ],
+  "mirrors": [
+    {"tag": "cnip", "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/cnip.json", "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/cnip.srs"},
+    {"tag": "cn", "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/cn.json", "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/cn.srs"},
+    {"tag": "ai", "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/ai.json", "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/ai.srs"},
+    {"tag": "media", "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/media.json", "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/media.srs"},
+    {"tag": "telegramip", "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/telegramip.json", "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/telegramip.srs"},
+    {"tag": "spotify", "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/spotify.json", "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/spotify.srs"},
+    {"tag": "private", "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/private.json", "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/private.srs"},
+    {"tag": "apple", "json_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/apple.json", "srs_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/apple.srs"},
+    {"tag": "microsoft", "json_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/microsoft.json", "srs_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/microsoft.srs"},
+    {"tag": "github", "json_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/github.json", "srs_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/github.srs"}
   ]
 }
