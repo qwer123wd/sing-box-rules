@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-14T10:29:34+00:00",
+  "updated_at": "2026-11-15T23:59:53+00:00",
   "deduplication": "exact string equality within the same rule field; no cross-field or semantic subtraction",
   "source_format_version": 2,
   "compiler": "1.15.0-alpha.13",
@@ -26,7 +26,7 @@
         "domain_keyword": 3
       },
       "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/microsoft.json",
-      "sha256": "53abc0a363a3c9094059b6b8ad637072905bf465e94b0c56d3002bd87e232a32"
+      "sha256": "f0c9e46d77bf7a82b56bbde6b9d4129bad42994ea02e4c6fc094f2e930d95453"
     },
     "github": {
       "version": 2,
@@ -37,7 +37,7 @@
         "domain_suffix": 33
       },
       "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/github.json",
-      "sha256": "fa2228474b14254cf7869c48cf16ee4fdcf276c4348b228d2b8e5cb5cfe059f9"
+      "sha256": "838d8385ba91deaad79d679813368eb6ff7b2cb699750907afc4fce299b553eb"
     },
     "ai": {
       "version": 5,
@@ -63,14 +63,14 @@
     },
     "proxy": {
       "version": 5,
-      "raw_entries": 26634,
-      "unique_entries": 26634,
+      "raw_entries": 26636,
+      "unique_entries": 26636,
       "fields": {
         "domain": 95,
-        "domain_suffix": 26539
+        "domain_suffix": 26541
       },
       "url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/proxy.json",
-      "sha256": "599f8a5916fe601806bf75fa944da0a5fa00f9236844baaa76bf75704b69391e"
+      "sha256": "3090d8e42e221211e5b1efbc17f0d52c2261ff5c30d23d9818f68c4e05ba513f"
     }
   },
   "fixed_files": {
@@ -117,37 +117,37 @@
   },
   "outputs": {
     "all": {
-      "entries": 27264,
+      "entries": 27266,
       "fields": {
         "domain": 263,
-        "domain_suffix": 26971,
+        "domain_suffix": 26973,
         "domain_keyword": 30
       },
       "files": {
         "data/all.json": {
-          "sha256": "e4f8deb3171b3a36b0808222cbe32d33e1f226e130da65197eecb881405e8054",
-          "bytes": 699977
+          "sha256": "b5926890c931a2d68f1f078af8bed254cd041e30287119a69643826eda351cb6",
+          "bytes": 700018
         },
         "data/all.srs": {
-          "sha256": "63b5a7d15d7cd9bdbaf8e2a495d30be1b83c10418546c036c00e45e881c364ea",
-          "bytes": 164475
+          "sha256": "7813b96f15ed55151114022e22b6895f4d66fcb765997aa05ff6273005b9594e",
+          "bytes": 164472
         }
       }
     },
     "proxy": {
-      "entries": 24962,
+      "entries": 24964,
       "fields": {
         "domain": 91,
-        "domain_suffix": 24871
+        "domain_suffix": 24873
       },
       "files": {
         "data/proxy.json": {
-          "sha256": "76b87a421b244913d9ae1830225e473fd1107ca746a46174332c5a45b6bc6cf3",
-          "bytes": 636938
+          "sha256": "78c516803698ddba0682211f72165d5a1bd697bd2db4b64effac72b4a39d518d",
+          "bytes": 636979
         },
         "data/proxy.srs": {
-          "sha256": "7f46b0d173e7d097ced3137d8c92ac795a7aa58d9130b575a9833f95c2c65807",
-          "bytes": 150427
+          "sha256": "8170813cc78a8f88ce3ff3b7e05e5def7410ced47e5e03386ba63abaf786af87",
+          "bytes": 150432
         }
       }
     }
@@ -155,42 +155,42 @@
   "mirrors": {
     "cnip": {
       "version": 5,
-      "raw_entries": 9470,
-      "unique_entries": 9470,
+      "raw_entries": 9481,
+      "unique_entries": 9481,
       "fields": {
-        "ip_cidr": 9470
+        "ip_cidr": 9481
       },
       "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/cnip.json",
       "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/cnip.srs",
       "files": {
         "data/cnip.json": {
-          "sha256": "68fec3dd7788c8fe8399b4f52048865d7759536236bfe0fccb5abfca4b64f493",
-          "bytes": 254334
+          "sha256": "c4c41eb868684598aa16628a299f412eb8b2e6d1ffc38ad5328e5720380fae02",
+          "bytes": 254647
         },
         "data/cnip.srs": {
-          "sha256": "b224136459eea968568a089cc390466ab327c452af9af063a6769067783f6467",
-          "bytes": 38589
+          "sha256": "394e80bd77223c5791be2b8ee33ef4daaa32dd218d4cee3c34ae710083ac91c7",
+          "bytes": 38605
         }
       }
     },
     "cn": {
       "version": 5,
-      "raw_entries": 109724,
-      "unique_entries": 109724,
+      "raw_entries": 109675,
+      "unique_entries": 109675,
       "fields": {
         "domain": 6,
-        "domain_suffix": 109718
+        "domain_suffix": 109669
       },
       "json_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/cn.json",
       "srs_url": "https://raw.githubusercontent.com/DustinWin/ruleset_geodata/sing-box-ruleset/cn.srs",
       "files": {
         "data/cn.json": {
-          "sha256": "2dbff50f6861abdd010bd91b5695eb254d5f808dda0a66cf6e024660a1d9118e",
-          "bytes": 2591272
+          "sha256": "f1f169946448187924ae67fb3cd55c6a989110dfd28090b00c6b80bbaaa5cb8a",
+          "bytes": 2589926
         },
         "data/cn.srs": {
-          "sha256": "767d9c482a6d9d4511a5316adcb442609ecd96975ebd6514ae838dfdc93be853",
-          "bytes": 435421
+          "sha256": "651607288a116cab82ffb9af9255a3d21c3759b31a860cfb4af7f8d576deb94b",
+          "bytes": 435119
         }
       }
     },
@@ -313,7 +313,7 @@
       "srs_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/apple.srs",
       "files": {
         "data/apple.json": {
-          "sha256": "4baca7affdbd33ada5b6eb4040119369f2424c79cd35304333377d67b3fa7dee",
+          "sha256": "9d0cc9b81d719fecce4d681de96abff391a899cc8e5d436134d07f00d30d4c75",
           "bytes": 53691
         },
         "data/apple.srs": {
@@ -335,7 +335,7 @@
       "srs_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/microsoft.srs",
       "files": {
         "data/microsoft.json": {
-          "sha256": "53abc0a363a3c9094059b6b8ad637072905bf465e94b0c56d3002bd87e232a32",
+          "sha256": "f0c9e46d77bf7a82b56bbde6b9d4129bad42994ea02e4c6fc094f2e930d95453",
           "bytes": 22960
         },
         "data/microsoft.srs": {
@@ -356,7 +356,7 @@
       "srs_url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/geo/geosite/github.srs",
       "files": {
         "data/github.json": {
-          "sha256": "fa2228474b14254cf7869c48cf16ee4fdcf276c4348b228d2b8e5cb5cfe059f9",
+          "sha256": "838d8385ba91deaad79d679813368eb6ff7b2cb699750907afc4fce299b553eb",
           "bytes": 2761
         },
         "data/github.srs": {
